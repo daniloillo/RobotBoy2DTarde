@@ -108,7 +108,7 @@ public class PlayerManagement : MonoBehaviour
         }
 
         //Caida Jugador
-        if (rb.velocity.y < -0.15f)
+        if (rb.velocity.y < -0.1f)
         {
             animator.SetBool("Caida", true);
 
@@ -167,11 +167,11 @@ public class PlayerManagement : MonoBehaviour
     {   //LongitudRayCast
         float groundDistance = 0.02f;
         //RayCastIzquierda
-        Debug.DrawRay(new Vector3 (transform.position.x-0.25f, transform.position.y+0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
-        RaycastHit2D hitIzq = Physics2D.Raycast(new Vector2 (transform.position.x - 0.25f, transform.position.y + 0.12f), Vector2.down, groundDistance);       
+        Debug.DrawRay(new Vector3 (transform.position.x-0.24f, transform.position.y+0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
+        RaycastHit2D hitIzq = Physics2D.Raycast(new Vector2 (transform.position.x - 0.24f, transform.position.y + 0.12f), Vector2.down, groundDistance);       
         //RayCastDerecha
-        Debug.DrawRay(new Vector3(transform.position.x+0.25f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
-        RaycastHit2D hitDcha = Physics2D.Raycast(new Vector2 (transform.position.x + 0.25f, transform.position.y + 0.12f), Vector2.down, groundDistance);
+        Debug.DrawRay(new Vector3(transform.position.x+0.24f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
+        RaycastHit2D hitDcha = Physics2D.Raycast(new Vector2 (transform.position.x + 0.24f, transform.position.y + 0.12f), Vector2.down, groundDistance);
         //NOTAS: En el RaycastHit si ponemos transform.position, aunque visualmente el rayo esté movido, realmente está colocado en el centro del objeto
         if (hitIzq.collider != null || hitDcha.collider != null)
         {
