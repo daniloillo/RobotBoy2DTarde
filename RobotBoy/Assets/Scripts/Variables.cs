@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Variables : MonoBehaviour
 {
-    public float jumpForce = 10000f;
-    public float speedX = 10000f;
+    public float jumpForce;
+    public float speedX;
     public bool alive = true;
 
 
