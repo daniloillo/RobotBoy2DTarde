@@ -7,6 +7,8 @@ public class PlayerManagement : MonoBehaviour
     Animator animator;
     Rigidbody2D rb;
     Variables variables;
+    BoxCollider2D bc; 
+        
     //Enfriamiento Voltereta
     bool cd = true;   
 
@@ -15,15 +17,17 @@ public class PlayerManagement : MonoBehaviour
     {
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
+        bc = gameObject.GetComponent<BoxCollider2D>();
         variables = GameObject.Find("Variables").GetComponent<Variables>();
         //El juego comienza con Correr = False
         animator.SetBool("Correr", false);
+        
 
 
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         if (variables.alive == true)
         {
@@ -44,7 +48,7 @@ public class PlayerManagement : MonoBehaviour
 
         if (desplX != 0f)
         {   //Movimiento Estandar
-            if (!animator.GetBool("Correr"))
+            if (!animator.GetBool("Correr") && (!animator.GetBool("Agachado")))
             {
                 transform.Translate(Vector3.right * Time.deltaTime * desplX * variables.speedX, Space.World);
             }
@@ -98,14 +102,26 @@ public class PlayerManagement : MonoBehaviour
     }
     void Saltar()
     {   //Salto
-        if (Input.GetButtonDown("Saltar") && animator.GetBool("Grounded") && animator.GetBool ("De Pie"))
+
+        if(cd == true)
         {
+            if (Input.GetButtonDown("Saltar") && animator.GetBool("Grounded"))
+            {
+                cd = false;
 
-            animator.SetTrigger("Salto");           
+                animator.SetTrigger("Salto");
 
-            rb.AddForce(new Vector2(0f, 1f) * variables.jumpForce, ForceMode2D.Impulse);
+                rb.AddForce(new Vector2(0f, 1f) * variables.jumpForce, ForceMode2D.Impulse);
 
+                Invoke("Cooldown", 0.5f);
+
+            }
+            else
+            {
+
+            }
         }
+        
 
         //Caida Jugador
         if (rb.velocity.y < -0.1f)
@@ -120,20 +136,36 @@ public class PlayerManagement : MonoBehaviour
     }
 
     void Agacharse()
-    {   //Agacharse
+    {
+        float desplX = Input.GetAxis("Horizontal");
+        //Agacharse
         if (Input.GetButton("Agacharse") && animator.GetBool("Grounded"))
         {
 
             animator.SetBool("Agachado", true);
-            animator.SetBool("De Pie", false);
 
-
+            //Cambia el tamaño del BoxCollider
+            bc.offset = new Vector2(0.35f, 0.88f);
+            bc.size = new Vector2(1.3f, 1.5f);
         }
         //Levantarse
         else
         {
             animator.SetBool("Agachado", false);
-            animator.SetBool("De Pie", true);
+
+            //Devuelve el tamano del BoxCollider           
+            bc.offset = new Vector2(0f, 1.23f);
+            bc.size = new Vector2(0.5f, 2.2f);
+
+        }
+        //Velocidad Agachado.
+        if (animator.GetBool("Agachado") && animator.GetBool("Grounded"))
+        {
+            transform.Translate(Vector3.right * Time.deltaTime * desplX * variables.speedX * 0.4f, Space.World);
+        }
+        else
+        {
+            
         }
     }
     void Voltereta()
@@ -146,8 +178,14 @@ public class PlayerManagement : MonoBehaviour
             {
                 cd = false;
                 animator.SetTrigger("Voltereta");
-                rb.AddForce(new Vector2(desplX, 0f) * 10f, ForceMode2D.Impulse);
-                Invoke("VolteretaCooldown", 1f);
+                rb.AddForce(new Vector2(1f, 0f) * 15f * desplX, ForceMode2D.Impulse);
+
+                
+                //Cooldown
+                Invoke("Cooldown", 0.5f);
+                //Parada Voltereta
+                Invoke("FrenoVoltereta", 0.4f);
+
             }
         }
         else
@@ -155,11 +193,15 @@ public class PlayerManagement : MonoBehaviour
 
         }
     }
-    //Cooldown de Voltereta
-    public void VolteretaCooldown()
+    //Cooldown de Voltereta y Salto
+    public void Cooldown()
     {
-        print("Espera");
         cd = true;
+
+    }
+    public void FrenoVoltereta()
+    {
+        rb.velocity = new Vector2(0f,rb.velocity.y);
     }
 
     
@@ -167,13 +209,14 @@ public class PlayerManagement : MonoBehaviour
     {   //LongitudRayCast
         float groundDistance = 0.02f;
         //RayCastIzquierda
-        Debug.DrawRay(new Vector3 (transform.position.x-0.24f, transform.position.y+0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
-        RaycastHit2D hitIzq = Physics2D.Raycast(new Vector2 (transform.position.x - 0.24f, transform.position.y + 0.12f), Vector2.down, groundDistance);       
+        Debug.DrawRay(new Vector3 (transform.position.x-0.20f, transform.position.y+0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
+        RaycastHit2D hitIzq = Physics2D.Raycast(new Vector2 (transform.position.x - 0.20f, transform.position.y + 0.12f), Vector2.down, groundDistance);       
         //RayCastDerecha
-        Debug.DrawRay(new Vector3(transform.position.x+0.24f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
-        RaycastHit2D hitDcha = Physics2D.Raycast(new Vector2 (transform.position.x + 0.24f, transform.position.y + 0.12f), Vector2.down, groundDistance);
+        Debug.DrawRay(new Vector3(transform.position.x+0.10f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
+        RaycastHit2D hitDcha = Physics2D.Raycast(new Vector2 (transform.position.x + 0.20f, transform.position.y + 0.12f), Vector2.down, groundDistance);
         //NOTAS: En el RaycastHit si ponemos transform.position, aunque visualmente el rayo esté movido, realmente está colocado en el centro del objeto
-        if (hitIzq.collider != null || hitDcha.collider != null)
+
+        if ((hitIzq.collider != null)||( hitDcha.collider != null))
         {
             animator.SetBool("Caida", false);
             animator.SetBool("Grounded", true);
