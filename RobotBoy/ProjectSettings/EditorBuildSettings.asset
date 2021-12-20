@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/RobotBoyLevel1.unity
+    guid: 5d29549f9ee57a344808ec76447f0e19
   m_configObjects: {}

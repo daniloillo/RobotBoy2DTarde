@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerManagement : MonoBehaviour
 {
@@ -37,9 +38,11 @@ public class PlayerManagement : MonoBehaviour
             Agacharse();
             Voltereta();
             DetectorSuelo();
+            MuerteCaida();
 
 
         }
+       
     }
 
     void Movimiento()
@@ -133,7 +136,9 @@ public class PlayerManagement : MonoBehaviour
         {
 
         }
+
     }
+    
 
     void Agacharse()
     {
@@ -235,7 +240,24 @@ public class PlayerManagement : MonoBehaviour
     {
         variables.alive = false;
         animator.SetTrigger("Muerte");
+        Invoke("Restart", 2f);
+        
     }
+    //Muerte Por Caida
+    void MuerteCaida()
+    {   if(transform.position.y <= -4f)
+        {
+            Restart();
+        } 
+        
+    }
+    
+    void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+     
 }
 
 
