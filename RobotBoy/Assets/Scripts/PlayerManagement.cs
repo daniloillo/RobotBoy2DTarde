@@ -7,10 +7,10 @@ public class PlayerManagement : MonoBehaviour
     Animator animator;
     Rigidbody2D rb;
     Variables variables;
-    BoxCollider2D bc; 
-        
+    BoxCollider2D bc;
+
     //Enfriamiento Voltereta
-    bool cd = true;   
+    bool cd = true;
 
     // Start is called before the first frame update
     void Start()
@@ -21,7 +21,7 @@ public class PlayerManagement : MonoBehaviour
         variables = GameObject.Find("Variables").GetComponent<Variables>();
         //El juego comienza con Correr = False
         animator.SetBool("Correr", false);
-        
+
 
 
     }
@@ -32,7 +32,7 @@ public class PlayerManagement : MonoBehaviour
         if (variables.alive == true)
         {
             Movimiento();
-            Correr();           
+            Correr();
             Saltar();
             Agacharse();
             Voltereta();
@@ -41,7 +41,7 @@ public class PlayerManagement : MonoBehaviour
 
         }
     }
-    
+
     void Movimiento()
     {
         float desplX = Input.GetAxis("Horizontal");
@@ -52,14 +52,14 @@ public class PlayerManagement : MonoBehaviour
             {
                 transform.Translate(Vector3.right * Time.deltaTime * desplX * variables.speedX, Space.World);
             }
-                      
+
 
             //Convertir Velocidad a Variable de Animator
             animator.SetFloat("VelocityX", Mathf.Abs(desplX));
 
             //Voltear Sprite
             Vector3 EscalaX = transform.localScale;
-            if(desplX > 0f)
+            if (desplX > 0f)
             {
                 transform.localScale = new Vector3(1f, 1f, 1f);
             }
@@ -67,7 +67,7 @@ public class PlayerManagement : MonoBehaviour
             {
                 transform.localScale = new Vector3(-1f, 1f, 1f);
             }
-            
+
 
         }
         else
@@ -88,8 +88,8 @@ public class PlayerManagement : MonoBehaviour
         {
 
         }
-           
-        
+
+
         if ((desplX >= 0.1f || desplX <= -0.1f) && animator.GetBool("Correr") && animator.GetBool("Grounded"))
         {
             transform.Translate(Vector3.right * Time.deltaTime * desplX * variables.speedX * 2, Space.World);
@@ -103,7 +103,7 @@ public class PlayerManagement : MonoBehaviour
     void Saltar()
     {   //Salto
 
-        if(cd == true)
+        if (cd == true)
         {
             if (Input.GetButtonDown("Saltar") && animator.GetBool("Grounded"))
             {
@@ -113,7 +113,7 @@ public class PlayerManagement : MonoBehaviour
 
                 rb.AddForce(new Vector2(0f, 1f) * variables.jumpForce, ForceMode2D.Impulse);
 
-                Invoke("Cooldown", 0.5f);
+                Invoke("Cooldown", 1f);
 
             }
             else
@@ -121,7 +121,7 @@ public class PlayerManagement : MonoBehaviour
 
             }
         }
-        
+
 
         //Caida Jugador
         if (rb.velocity.y < -0.1f)
@@ -165,7 +165,7 @@ public class PlayerManagement : MonoBehaviour
         }
         else
         {
-            
+
         }
     }
     void Voltereta()
@@ -180,7 +180,7 @@ public class PlayerManagement : MonoBehaviour
                 animator.SetTrigger("Voltereta");
                 rb.AddForce(new Vector2(1f, 0f) * 15f * desplX, ForceMode2D.Impulse);
 
-                
+
                 //Cooldown
                 Invoke("Cooldown", 0.5f);
                 //Parada Voltereta
@@ -193,34 +193,36 @@ public class PlayerManagement : MonoBehaviour
 
         }
     }
+
     //Cooldown de Voltereta y Salto
     public void Cooldown()
     {
         cd = true;
 
     }
+    //Freno Voltereta
     public void FrenoVoltereta()
     {
-        rb.velocity = new Vector2(0f,rb.velocity.y);
+        rb.velocity = new Vector2(0f, rb.velocity.y);
     }
 
-    
+
     void DetectorSuelo()
     {   //LongitudRayCast
         float groundDistance = 0.02f;
         //RayCastIzquierda
-        Debug.DrawRay(new Vector3 (transform.position.x-0.20f, transform.position.y+0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
-        RaycastHit2D hitIzq = Physics2D.Raycast(new Vector2 (transform.position.x - 0.20f, transform.position.y + 0.12f), Vector2.down, groundDistance);       
+        Debug.DrawRay(new Vector3(transform.position.x - 0.20f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
+        RaycastHit2D hitIzq = Physics2D.Raycast(new Vector2(transform.position.x - 0.20f, transform.position.y + 0.12f), Vector2.down, groundDistance);
         //RayCastDerecha
-        Debug.DrawRay(new Vector3(transform.position.x+0.10f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
-        RaycastHit2D hitDcha = Physics2D.Raycast(new Vector2 (transform.position.x + 0.20f, transform.position.y + 0.12f), Vector2.down, groundDistance);
+        Debug.DrawRay(new Vector3(transform.position.x + 0.10f, transform.position.y + 0.12f, transform.position.z), Vector2.down * groundDistance, Color.red);
+        RaycastHit2D hitDcha = Physics2D.Raycast(new Vector2(transform.position.x + 0.20f, transform.position.y + 0.12f), Vector2.down, groundDistance);
         //NOTAS: En el RaycastHit si ponemos transform.position, aunque visualmente el rayo esté movido, realmente está colocado en el centro del objeto
 
-        if ((hitIzq.collider != null)||( hitDcha.collider != null))
+        if ((hitIzq.collider != null) || (hitDcha.collider != null))
         {
             animator.SetBool("Caida", false);
             animator.SetBool("Grounded", true);
-            
+
         }
         else
         {
@@ -228,15 +230,21 @@ public class PlayerManagement : MonoBehaviour
         }
 
     }
-
-    
-  
+    //DetectorMuerte
+    private void OnTriggerEnter2D()
+    {
+        variables.alive = false;
+        animator.SetTrigger("Muerte");
+    }
 }
-    
 
 
 
-    
-    
+
+
+
+
+
+
 
 

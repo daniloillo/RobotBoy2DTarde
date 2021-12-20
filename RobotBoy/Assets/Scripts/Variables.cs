@@ -7,6 +7,7 @@ public class Variables : MonoBehaviour
     public float jumpForce;
     public float speedX;
     public bool alive = true;
+    public float bulletSpeed = 3f;
 
 
     // Start is called before the first frame update
