@@ -234,6 +234,8 @@ public class PlayerManagement : MonoBehaviour
             animator.SetBool("Grounded", false);
         }
 
+       
+
     }
     //DetectorMuerte
     private void OnTriggerEnter2D()
@@ -256,8 +258,20 @@ public class PlayerManagement : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
-    
-     
+
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag == "Platform")            
+        {
+            transform.parent = collision.gameObject.transform;
+        }
+        else
+        {
+            transform.parent = null;
+        }
+        
+
+    }
 }
 
 
