@@ -42,3 +42,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 11282103
+    locked: 0
+  - name: Center(Game)
+    uniqueID: 3214994261
+    locked: 0
+  - name: FrontGround
+    uniqueID: 2793067883
+    locked: 0
